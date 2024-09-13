@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>intro_timeseriesdatasets</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">intro_timeseriesdatasets</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(timeSeriesDataSets)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>timeSeriesDataSets</code> package provides a
+<strong>collection of time series datasets for R</strong>, with suffixes
+(<code>_ts</code>, <code>_mts</code>, <code>_tbl_ts</code>) added based
+on the object type and class to clearly indicate their time series
+nature. This helps users easily identify time series datasets by their
+names. The datasets are sourced from various R packages, with modified
+names to reflect their time series structure. In this vignette, we will
+explore these datasets and demonstrate how to use them in your
+analyses.</p>
+</div>
+<div id="getting-started" class="section level2">
+<h2>Getting Started</h2>
+<p>To use the datasets from the <code>timeSeriesDataSets</code> package,
+you first need to install and load the package. You can install it from
+CRAN or from a local source if you’re developing it.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Install the package from CRAN</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># install.packages(&quot;timeSeriesDataSets&quot;)</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Load the package</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">library</span>(timeSeriesDataSets)</span></code></pre></div>
+</div>
+<div id="datasets-overview" class="section level2">
+<h2>Datasets Overview</h2>
+<p>The <code>AirPassengers_ts</code> dataset is a classic time series
+that shows the monthly number of passengers from 1949 to 1960. Note that
+the <code>timeSeriesDataSets</code> package adds a _ts suffix to
+identify datasets like AirPassengers_ts as time series.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Load the dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;AirPassengers_ts&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Check the class of the dataset</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">class</span>(AirPassengers_ts)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ts&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># Display the first few rows of the dataset</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="fu">head</span>(AirPassengers_ts)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; [1] 112 118 132 129 121 135</span></span></code></pre></div>
+</div>
+<div id="time-series-visualization" class="section level2">
+<h2>Time Series Visualization</h2>
+<p>You can use these time series datasets for various time series
+analyses and visualizations. For example, you can plot the data to
+visualize trends over time.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># Convert AirPassengers to a data frame for use with ggplot2</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>air_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">Month =</span> <span class="fu">time</span>(AirPassengers_ts),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">Passengers =</span> <span class="fu">as.numeric</span>(AirPassengers_ts)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># Time series plot</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="fu">ggplot</span>(air_df, <span class="fu">aes</span>(<span class="at">x =</span> Month, <span class="at">y =</span> Passengers)) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;International Airline Passengers (1949-1960)&quot;</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Date&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of Passengers&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; Don&#39;t know how to automatically pick scale for object of type &lt;ts&gt;. Defaulting</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; to continuous.</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="trend-and-seasonality" class="section level2">
+<h2>Trend and Seasonality</h2>
+<p>We can extract the trend and seasonality components from the
+decomposed time series.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># Decompose the time series</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>decomposed_ap <span class="ot">&lt;-</span> <span class="fu">decompose</span>(AirPassengers_ts)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Extract trend and seasonality</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>trend <span class="ot">&lt;-</span> decomposed_ap<span class="sc">$</span>trend</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>seasonal <span class="ot">&lt;-</span> decomposed_ap<span class="sc">$</span>seasonal</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># Create a data frame for ggplot2</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>decomposed_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">Month =</span> <span class="fu">time</span>(AirPassengers_ts),</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="at">Passengers =</span> <span class="fu">as.numeric</span>(AirPassengers_ts),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="at">Trend =</span> trend,</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="at">Seasonal =</span> seasonal</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>)</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co"># Plot trend and seasonality</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="fu">ggplot</span>(decomposed_df, <span class="fu">aes</span>(<span class="at">x =</span> Month)) <span class="sc">+</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Passengers), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Trend), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Seasonal <span class="sc">+</span> <span class="fu">mean</span>(Passengers)), <span class="at">color =</span> <span class="st">&quot;green&quot;</span>, <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Trend and Seasonality in AirPassengers Dataset&quot;</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Date&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of Passengers&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; Don&#39;t know how to automatically pick scale for object of type &lt;ts&gt;. Defaulting</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; to continuous.</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 12 rows containing missing values or values outside the scale range</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>timeSeriesDataSets</code> package provides a rich
+collection of time series datasets for analysis. With these datasets,
+you can perform various time series analyses and gain insights into
+trends and patterns over time. The <code>timeSeriesDataSets</code>
+package aims to provide a comprehensive set of time series datasets that
+have been sourced from various R packages and modified to fit specific
+time series object conventions. This package should be a valuable
+resource for anyone working with time series data in R.</p>
+<p>We encourage you to explore the datasets and leverage the
+functionality of this package to enhance your time series analysis and
+research.</p>
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
